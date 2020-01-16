@@ -1,0 +1,37 @@
+section.block_zoom_scheduler #id_timestart_day,
+section.block_zoom_scheduler #id_timestart_month,
+section.block_zoom_scheduler #id_timestart_year,
+section.block_zoom_scheduler #id_timestart_calendar.visibleifjs,
+div[data-block="zoom_scheduler"] #id_timestart_day,
+div[data-block="zoom_scheduler"] #id_timestart_month,
+div[data-block="zoom_scheduler"] #id_timestart_year,
+div[data-block="zoom_scheduler"] #id_timestart_calendar.visibleifjs {
+	display:none;
+}
+section.block_zoom_scheduler .fdate_time_selector,
+div[data-block="zoom_scheduler"] .fdate_time_selector {
+	font-size: 1px;
+}
+section.block_zoom_scheduler #id_timestart_hour,
+section.block_zoom_scheduler #id_timestart_minute,
+div[data-block="zoom_scheduler"] #id_timestart_hour,
+div[data-block="zoom_scheduler"] #id_timestart_minute {
+	font-size: 14px;
+}
+section.block_zoom_scheduler .row,
+section.block_zoom_scheduler .col-md-3,
+section.block_zoom_scheduler .col-md-9,
+div[data-block="zoom_scheduler"] .row,
+div[data-block="zoom_scheduler"] .col-md-3,
+div[data-block="zoom_scheduler"] .col-md-9 {
+    display: block;
+    max-width: 100%;
+}
+/*section.block_zoom_scheduler #fitem_id_duration .form-inline .form-group,
+div[data-block="zoom_scheduler"] .form-inline[data-fieldtype="duration"] .form-group {
+	width: 45%;
+}
+section.block_zoom_scheduler #fitem_id_duration .form-inline .form-group span[data-fieldtype="text"],
+div[data-block="zoom_scheduler"] .form-inline[data-fieldtype="duration"] .form-group span[data-fieldtype="text"] {
+	width: 100%;
+}*/
