@@ -35,54 +35,62 @@ require_once('../../../config.php');
 
 require_login();
 
-global $CFG, $DB;
-require_once($CFG->dirroot.'/blocks/zoom_scheduler/lib.php');
-require_once($CFG->dirroot.'/mod/zoom/locallib.php');
+if (is_siteadmin()) {
 
-$data = new stdClass();
+	global $CFG, $DB;
+	require_once($CFG->dirroot.'/blocks/zoom_scheduler/lib.php');
+	require_once($CFG->dirroot.'/mod/zoom/locallib.php');
 
-$data->id = $_GET["id"]; //22;
-if(!$data->id) {
-	echo "You must set a course id (id=) in the url parameters.";
-	die();
-}
+	$data = new stdClass();
 
-$data->weekday = $_GET["day"];
-$hour = $_GET["hour"];
-$minute = $_GET["minute"];
-if(!$data->weekday || !isset($hour) || !isset($minute)) {
-	echo "You MUST set meeting day of week (day=), hour (hour=), and minute (minute=) in the url parameters.";
-	die();
-}
-$dt = new DateTime();
-$dt->setTime($hour, $minute);
-$data->timestart = $dt->getTimestamp();
-
-$length_mins = $_GET["length"];
-if(!$length_mins) {
-	echo "You must set meeting length in minutes (length=) in the url parameters.";
-	die();
-}
-$data->duration = $length_mins*60;
-
-//prefix used to add additional info at beginning of meeting topic
-$data->prefix = $_GET["prefix"] ? $_GET["prefix"] : "";
-
-$email = $_GET["email"] ? $_GET["email"] : "";
-
-if($email){
-	$service = new mod_zoom_webservice();
-	try {
-		$zoomuser = $service->get_user($email);
-		if ($zoomuser !== false) {
-			$data->host = $zoomuser->id;
-		} else {
-			echo "Could not find host id related to $email";
-		}
-	} catch (moodle_exception $error) {
-		echo "Could not complete ws call with $email";
+	$data->id = $_GET["id"]; //22;
+	if(!$data->id) {
+		echo "You must set a course id (id=) in the url parameters.";
+		die();
 	}
-}
 
-$result = process_zoom_form($data);/**/
-print_R($result);
+	$data->weekday = $_GET["day"];
+	$hour = $_GET["hour"];
+	$minute = $_GET["minute"];
+	if(!$data->weekday || !isset($hour) || !isset($minute)) {
+		echo "You MUST set meeting day of week (day=), hour (hour=), and minute (minute=) in the url parameters.";
+		die();
+	}
+	$dt = new DateTime();
+	$dt->setTime($hour, $minute);
+	$data->timestart = $dt->getTimestamp();
+
+	$length_mins = $_GET["length"];
+	if(!$length_mins) {
+		echo "You must set meeting length in minutes (length=) in the url parameters.";
+		die();
+	}
+	$data->duration = $length_mins*60;
+
+	// Prefix used to add additional info at beginning of meeting topic.
+	$data->prefix = $_GET["prefix"] ? $_GET["prefix"] : "";
+
+	// Action and Nth used to override defaults and create new meetings if meetings already exist, 
+	//  and to modify a meeting after the first in a course section.
+	$data->action = $_GET["action"] ? $_GET["action"] : "";
+	$data->nth = $_GET["nth"] ? $_GET["nth"] : 0;
+
+	$email = $_GET["email"] ? $_GET["email"] : "";
+
+	if($email){
+		$service = new mod_zoom_webservice();
+		try {
+			$zoomuser = $service->get_user($email);
+			if ($zoomuser !== false) {
+				$data->host = $zoomuser->id;
+			} else {
+				echo "Could not find host id related to $email";
+			}
+		} catch (moodle_exception $error) {
+			echo "Could not complete ws call with $email";
+		}
+	}
+
+	$result = process_zoom_form($data);/**/
+	print_R($result);
+}

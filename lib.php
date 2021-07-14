@@ -39,15 +39,12 @@ function process_zoom_form($data) {
 	global $DB;
 	$context = context_course::instance($data->id);
 	require_capability('mod/zoom:addinstance', $context);
-	$config = get_config('mod_zoom');
+	$config = get_config('zoom'); //TK
 	
-	$host_id = $data->host ? $data->host : zoom_get_user_id();
+	$host_id = $data->host ?? zoom_get_user_id();
 	$moduleid = $DB->get_field('modules', 'id', array('name'=>'zoom'));
 	$course = $DB->get_record('course', array('id'=>$data->id));
 	$num_sections = $DB->count_records('course_sections', array('course'=>$course->id)) - 1; //exclude section 0
-	
-	//need to get a grade category "ungraded" and return id
-	$gradecat = $DB->get_record('grade_categories', array('courseid'=>$course->id,'fullname'=>'Ungraded'));
 	
 	//calculate interval to desired weekday (if any)
 	$dt = new DateTime();
@@ -69,9 +66,21 @@ function process_zoom_form($data) {
 	$prefix = $data->prefix;
 	
 	$zooms = $DB->get_records('zoom', array('course'=>$course->id));
-	$action = $zooms ? "Update" : "Create";
+	
+	// Allow override of default action to "Create" even if zooms exist in course.
+	if (!$zooms || $data->action == "Create") {
+		//$action = "Create";
+		$zooms = null;
+	} else {
+		//$action = "Update";
+	}
+	
+	// Allow updating meeting other than first in section.
+	$limitfrom = ($data->nth > 0) ? $data->nth - 1 : 0;
+	
 	$result = "";
-	$ct = 0;
+	$add_ct = 0;
+	$update_ct = 0;
 	
 	for ($i = 0; $i < $num_sections; $i++) {
 		$section = $i+1;
@@ -82,30 +91,34 @@ function process_zoom_form($data) {
 		$dt->add(new DateInterval('P'.($diff+($i*7)).'D') ); //startdate plus weekday difference plus number of weeks
 		$dt->setTime($hour, $minute);
 		
-		//$topic = $prefix . "Week $section Live Session - " . $dt->format('l, g:i A T');
 		$timestring = $dt->format(get_string('dtformat', 'block_zoom_scheduler'));
 		$topic = get_string('topic', 'block_zoom_scheduler',
 			['prefix' => $prefix, 'section' => $section, 'dt' => $timestring]);
-		//$cmidnumber = 'liveses-wk'.sprintf("%02d", $section).'z01';//.sprintf("%04d", $length_mins);
 		$cmidnumber = get_string('cmidnumber', 'block_zoom_scheduler',
 			['section' => sprintf("%02d", $section), 'count' => '01']);
 		$start_time = $dt->getTimestamp();
 		
-		if($zooms){ //update
+		$newzoom = null;
+		
+		if($zooms){ //try update
 			$sectionid = $DB->get_field('course_sections', 'id', array('course'=>$course->id,'section'=>$section));
-			$cm = $DB->get_record('course_modules', array('course'=>$course->id,'module'=>$moduleid,'section'=>$sectionid));
+			$cms = $DB->get_records('course_modules', array('course'=>$course->id,'module'=>$moduleid,'section'=>$sectionid), 
+			                       $sort='id ASC', $fields='*', $limitfrom, $limitnum=1);
+			$cm = reset($cms);
 			$cm->modname = 'zoom';
 			
 			$newzoom = $zooms[$cm->instance];
+		}
+		if($newzoom){ //confirm update
 			$newzoom->coursemodule = $cm->id;
 			$newzoom->instance = $cm->instance;
-			$newzoom->name = $cm->name;
 			$newzoom->update = $cm->id;
 			
 			$newzoom->visible = $cm->visible;
 			$newzoom->availability = $cm->availability;
 			$newzoom->completion = $cm->completion;
-			$newzoom->completionusegrade = $cm->completionusegrade;
+			$newzoom->completionview = $cm->completionview;
+			$newzoom->introeditor = array('text' => $newzoom->intro, 'format' => $newzoom->introformat, 'itemid' => 0);
 		} else { //add
 			$newzoom = new stdClass();
 			$newzoom->meeting_id = -1;
@@ -113,14 +126,16 @@ function process_zoom_form($data) {
 			$newzoom->section = $section;
 			$newzoom->add = 'zoom';
 			$newzoom->update = 0;
-			$newzoom->grade = 1;
-			$newzoom->gradecat = $gradecat->id;
+			$newzoom->grade = 0;
 			$newzoom->completionunlocked = 1;
 			
 			$newzoom->visible = 1;
 			$newzoom->availabilityconditionsjson = '{"op":"&","c":[],"showc":[]}';
 			$newzoom->completion = 2;
-			$newzoom->completionusegrade = 1;
+			$newzoom->completionview = 1;
+			
+			$newzoom->recurring = 0;
+			$newzoom->introeditor = array('text' => null, 'format' => null, 'itemid' => 0);
 		}
 		
 		$newzoom->modulename = 'zoom';
@@ -136,33 +151,61 @@ function process_zoom_form($data) {
 		$newzoom->option_participants_video = $config->defaultparticipantsvideo;
 		$newzoom->option_audio = $config->defaultaudiooption;
 		$newzoom->option_jbh = $config->defaultjoinbeforehost;
+		$newzoom->option_waiting_room = $config->defaultwaitingroomoption;
+		$newzoom->option_mute_upon_entry = $config->defaultmuteuponentryoption;
+		$newzoom->option_authenticated_users = $config->defaultauthusersoption;
+		$newzoom->requirepasscode = 1;
+		$newzoom->meetingcode = rand(100000,999999);
 		
 		try {
-			if($zooms){ //update
+			if($newzoom->update){ //update
 				$updateinfo = update_moduleinfo($cm, $newzoom, $course);
 				$moduleinfo = $updateinfo[1];
 				$moduleinfo->section = $section;
+				$update_ct++;
 			} else { //add
 				$moduleinfo = add_moduleinfo($newzoom, $course);
+				$add_ct++;
 					
 				//move before archive link
 				$beforemod_idnumber = 'liveses-wk'.sprintf("%02d", $section).'u01';
 				$beforemod = $DB->get_record('course_modules', array('course'=>$course->id,'idnumber'=>$beforemod_idnumber));
 				
-				if($moduleinfo->coursemodule && $beforemod->id){
+				if($moduleinfo->coursemodule && $beforemod){
 					course_add_cm_to_section($moduleinfo->course, $moduleinfo->coursemodule, $moduleinfo->section, $beforemod->id);
 					
 					//indent module
 					$DB->set_field('course_modules', 'indent', 1, array('id' => $moduleinfo->coursemodule));
 				}
 			}
-			$ct++;
+			
 		} catch(moodle_exception $e){
-			$result .= $e->getMessage()."<br>";
+			//$result .= $e->getMessage()." $newzoom->coursemodule in section $section<br>";
+			\core\notification::error($e->getMessage()." $newzoom->coursemodule in section $section");
 		}
 	}
 	
-	//$result = array($data, $ct);
-	$result .= $action."d $ct meetings.";
-	return $result;
+	if($update_ct){
+		//$result .= "Updated $update_ct meetings.<br>";
+		\core\notification::info("Updated $update_ct meetings.");
+	}
+	if($add_ct){
+		//$result .= "Created $add_ct meetings.<br>";
+		\core\notification::info("Created $add_ct meetings.");
+	}
+	
+	//return $result;
+}
+
+function get_list_of_weekdays() {
+	$days = array(
+		'monday' => get_string('monday', 'core_calendar'),
+		'tuesday' => get_string('tuesday', 'core_calendar'),
+		'wednesday' => get_string('wednesday', 'core_calendar'),
+		'thursday' => get_string('thursday', 'core_calendar'),
+		'friday' => get_string('friday', 'core_calendar'),
+		'saturday' => get_string('saturday', 'core_calendar'),
+		'sunday' => get_string('sunday', 'core_calendar')
+	);
+	return $days;
 }

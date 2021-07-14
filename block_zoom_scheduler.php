@@ -24,10 +24,6 @@
  
 defined('MOODLE_INTERNAL') || die();
 
-// Requires from mod_zoom
-/*global $CFG;
-require_once($CFG->dirroot.'/mod/zoom/locallib.php');*/
-
 class block_zoom_scheduler extends block_base {
 
 	function init() {
@@ -61,15 +57,23 @@ class block_zoom_scheduler extends block_base {
 		return false;
 	}
 
+	/**
+	  * Allow the block to have a configuration page
+	  *
+	  * @return boolean
+	  */
+	public function has_config() {
+		return true;
+	}
+
   /**
    * Sets up the content of the block for display to the user.
    *
    * @return The HTML content of the block.
    */
 	function get_content() {
-		global $COURSE, $CFG, /*$PAGE, $USER,*/ $DB;
+		global $COURSE, $CFG /*, $PAGE, $USER, $PAGE, $OUTPUT, $DB*/;
 		
-		//require_once($CFG->dirroot.'blocks/zoom_scheduler/zoom_scheduler_form.php');
 		require_once('zoom_scheduler_form.php');
 		require_once($CFG->dirroot.'/blocks/zoom_scheduler/lib.php');
 		
@@ -77,7 +81,7 @@ class block_zoom_scheduler extends block_base {
 			return $this->content;
 		}
 		
-		$context = context_system::instance();
+		$context = context_course::instance($COURSE->id); //TK
 		if (!has_capability('block/zoom_scheduler:viewinstance', $context)) {
 			return $this->content;
 		}
@@ -88,15 +92,18 @@ class block_zoom_scheduler extends block_base {
 		$mform = new zoom_scheduler_form();
 		
 		if ($data = $mform->get_data()) {
-			$this->content->text .= process_zoom_form($data);
+			//$result = 
+			process_zoom_form($data);
+			$courseurl = new moodle_url('/course/view.php', array('id' => $COURSE->id));
+			redirect($courseurl);//, $result, null, \core\output\notification::NOTIFY_WARNING);
 		} else {
 			//Set default data (if any)
 			$mform->set_data(
 				array(
 					'id' => $COURSE->id,
-					'weekday' => 'Monday',
+					'weekday' => get_config('block_zoom_scheduler', 'defaultweekday'),
 					'timestart' => 0,
-					'duration' => 2700
+					'duration' => get_config('block_zoom_scheduler', 'defaultduration')
 				)
 			);
 			

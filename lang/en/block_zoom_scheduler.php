@@ -37,3 +37,8 @@ $string['prefix_help'] = 'Meeting name will be formatted like: <br />'
 $string['action'] = 'Action';
 $string['action_help'] = '1. Create a new meeting in each section of the course'
 	.'<br />2. Update all existing meetings in the course to standard settings';
+
+$string['defaultweekday'] = 'Default weekday';
+$string['defaultweekday_desc'] = 'The default day of week for scheduling zoom meetings in the block form';
+$string['defaultduration'] = 'Default meeting length';
+$string['defaultduration_desc'] = 'The default duration for scheduling zoom meetings in the block form';
