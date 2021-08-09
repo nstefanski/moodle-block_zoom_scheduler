@@ -98,6 +98,10 @@ function process_zoom_form($data) {
 			['section' => sprintf("%02d", $section), 'count' => '01']);
 		$start_time = $dt->getTimestamp();
 		
+		$comp_dt = $dt;
+		$comp_dt->add(new DateInterval('PT'.($data->duration).'S') );
+		$comp_time = $comp_dt->getTimestamp();
+		
 		$newzoom = null;
 		
 		if($zooms){ //try update
@@ -145,6 +149,7 @@ function process_zoom_form($data) {
 		$newzoom->showdescription = 0;
 		$newzoom->start_time = $start_time;
 		$newzoom->duration = $data->duration;
+		$newzoom->completionexpected = $comp_time;
 		$newzoom->cmidnumber = $cmidnumber;
 		
 		$newzoom->option_host_video = $config->defaulthostvideo;
