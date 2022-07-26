@@ -44,5 +44,13 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         ),
         'clonepermissionsfrom' => 'mod/zoom:addinstance'
+    ),
+    'block/zoom_scheduler:schedulefor' => array(
+        'captype' => 'view',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'mod/zoom:refreshsessions'
     )
 );
