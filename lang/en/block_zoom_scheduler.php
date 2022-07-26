@@ -42,3 +42,5 @@ $string['defaultweekday'] = 'Default weekday';
 $string['defaultweekday_desc'] = 'The default day of week for scheduling zoom meetings in the block form';
 $string['defaultduration'] = 'Default meeting length';
 $string['defaultduration_desc'] = 'The default duration for scheduling zoom meetings in the block form';
+$string['schedulefor'] = 'Schedule for teacher by default';
+$string['schedulefor_desc'] = 'If the user has the capability to schedule for others, default to scheduling for the course teacher.';
