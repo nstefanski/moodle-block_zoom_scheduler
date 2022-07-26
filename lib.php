@@ -46,6 +46,13 @@ function process_zoom_form($data) {
 	$course = $DB->get_record('course', array('id'=>$data->id));
 	$num_sections = $DB->count_records('course_sections', array('course'=>$course->id)) - 1; //exclude section 0
 	
+	$service = new mod_zoom_webservice();
+	$settings = $service->get_user_settings($host_id);
+	$pmi_password = null;
+	if($settings->schedule_meeting->use_pmi_for_scheduled_meetings) {
+		$pmi_password = $settings->schedule_meeting->pmi_password;
+	}
+	
 	//calculate interval to desired weekday (if any)
 	$dt = new DateTime();
 	$dt->setTimestamp($course->startdate);
@@ -160,7 +167,7 @@ function process_zoom_form($data) {
 		$newzoom->option_mute_upon_entry = $config->defaultmuteuponentryoption;
 		$newzoom->option_authenticated_users = $config->defaultauthusersoption;
 		$newzoom->requirepasscode = 1;
-		$newzoom->meetingcode = rand(100000,999999);
+		$newzoom->meetingcode = $pmi_password ?? rand(100000,999999);
 		
 		try {
 			if($newzoom->update){ //update
