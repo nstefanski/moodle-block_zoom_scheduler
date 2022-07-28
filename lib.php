@@ -36,12 +36,29 @@ require_once($CFG->dirroot.'/mod/zoom/locallib.php');
  * @return string $result
  */
 function process_zoom_form($data) {
-	global $DB;
+	global $DB, $USER;
 	$context = context_course::instance($data->id);
 	require_capability('mod/zoom:addinstance', $context);
 	$config = get_config('zoom'); //TK
 	
-	$host_id = $data->host ?? zoom_get_user_id();
+	$host_id = $data->host ?? null;
+	$service = new mod_zoom_webservice();
+	if (!$host_id) {
+		$moodleusers = get_enrolled_users($context, 'mod/zoom:addinstance', 0, 'u.*');
+		if ($moodleusers && !array_key_exists($USER->id, $moodleusers) ) {
+			// current user is not enrolled, use the first moodle user
+			$zoomapiidentifier = zoom_get_api_identifier(reset($moodleusers));
+			$host_id = $service->get_user($zoomapiidentifier)->id;
+		} else {
+			$host_id = zoom_get_user_id();
+		}
+	}
+	$settings = $service->get_user_settings($host_id);
+	$pmi_password = null;
+	if($settings->schedule_meeting->use_pmi_for_scheduled_meetings) {
+		$pmi_password = $settings->schedule_meeting->pmi_password;
+	}
+	
 	$moduleid = $DB->get_field('modules', 'id', array('name'=>'zoom'));
 	$course = $DB->get_record('course', array('id'=>$data->id));
 	$num_sections = $DB->count_records('course_sections', array('course'=>$course->id)) - 1; //exclude section 0
@@ -160,7 +177,7 @@ function process_zoom_form($data) {
 		$newzoom->option_mute_upon_entry = $config->defaultmuteuponentryoption;
 		$newzoom->option_authenticated_users = $config->defaultauthusersoption;
 		$newzoom->requirepasscode = 1;
-		$newzoom->meetingcode = rand(100000,999999);
+		$newzoom->meetingcode = $pmi_password ?? rand(100000,999999);
 		
 		try {
 			if($newzoom->update){ //update
