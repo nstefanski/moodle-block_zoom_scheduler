@@ -42,3 +42,6 @@ $string['defaultweekday'] = 'Default weekday';
 $string['defaultweekday_desc'] = 'The default day of week for scheduling zoom meetings in the block form';
 $string['defaultduration'] = 'Default meeting length';
 $string['defaultduration_desc'] = 'The default duration for scheduling zoom meetings in the block form';
+$string['examplecourses'] = 'Example courses';
+$string['examplecourses_desc'] = 'Comma separated list of course ids to be used for training purposes; the course start dates will be regularly updated and the zoom meetings purged';
+$string['updateexamplecourses'] = 'Update Example Courses';
