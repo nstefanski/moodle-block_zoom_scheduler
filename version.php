@@ -24,8 +24,8 @@
 defined('MOODLE_INTERNAL') || die();
       
 $plugin->component = 'block_zoom_scheduler';
-$plugin->version   = 2021071200;
-$plugin->release = 'v0.75';
+$plugin->version   = 2022080200;
+$plugin->release = 'v0.9';
 $plugin->requires = 2017051500.00;
 $plugin->maturity = MATURITY_BETA;
 $plugin->dependencies = array('mod_zoom' => 2018092200);
