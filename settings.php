@@ -36,4 +36,8 @@ if ($ADMIN->fulltree) {
 	$settings->add(new admin_setting_configduration('block_zoom_scheduler/defaultduration',
         get_string('defaultduration', 'block_zoom_scheduler'), 
         get_string('defaultduration_desc', 'block_zoom_scheduler'), 2700, 3600));
+	
+	$settings->add(new admin_setting_configtext('block_zoom_scheduler/examplecourses',
+        get_string('examplecourses', 'block_zoom_scheduler'), 
+        get_string('examplecourses_desc', 'block_zoom_scheduler'), '', PARAM_NOTAGS));
 }
