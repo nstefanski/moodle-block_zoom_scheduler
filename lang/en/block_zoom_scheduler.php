@@ -45,3 +45,7 @@ $string['defaultduration_desc'] = 'The default duration for scheduling zoom meet
 $string['examplecourses'] = 'Example courses';
 $string['examplecourses_desc'] = 'Comma separated list of course ids to be used for training purposes; the course start dates will be regularly updated and the zoom meetings purged';
 $string['updateexamplecourses'] = 'Update Example Courses';
+
+$string['msg_count'] = 'There are <strong>{$a}</strong> meetings currently scheduled in this course.';
+$string['msg_not_enrolled'] = '<br><br>You are not enrolled in the course. New meetings will be scheduled for {$a}.';
+$string['msg_scheduled_user'] = '<br><br>Some of the meetings in this course were scheduled by a different user. When the meetings are updated, they will remain the host.';
