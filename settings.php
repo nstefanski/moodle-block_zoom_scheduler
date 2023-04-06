@@ -40,4 +40,8 @@ if ($ADMIN->fulltree) {
 	$settings->add(new admin_setting_configtext('block_zoom_scheduler/examplecourses',
         get_string('examplecourses', 'block_zoom_scheduler'), 
         get_string('examplecourses_desc', 'block_zoom_scheduler'), '', PARAM_NOTAGS));
+	
+	$settings->add(new admin_setting_configcheckbox('block_zoom_scheduler/completionexpected',
+        get_string('completionexpected', 'block_zoom_scheduler'), 
+        get_string('completionexpected_desc', 'block_zoom_scheduler'), 0, 1));
 }
