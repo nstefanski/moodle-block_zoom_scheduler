@@ -104,16 +104,24 @@ class block_zoom_scheduler extends block_base {
 			$class = 'alert alert-info';
 			if ($zooms) {
 				// Check if current user is host.
-				$host_id = zoom_get_user_id();
-				$user_is_host = 0;
-				foreach ($zooms as $zoom) {
-					if ($zoom->host_id == $host_id) {
-						$user_is_host++;
-					}
-				}
-				if ($ct > $user_is_host) {
-					$msg .= get_string('msg_scheduled_user', 'block_zoom_scheduler');
+				try {
+					$host_id = zoom_get_user_id();
+				} catch(\moodle_exception $exception) {
+					//$msg .= '<p><strong>' . $exception->getMessage() . '</strong></p>';
+					$msg .= get_string('msg_zoom_error', 'block_zoom_scheduler', $exception->getMessage());
 					$class = 'alert alert-warning';
+				}
+				if ($host_id) {
+					$user_is_host = 0;
+					foreach ($zooms as $zoom) {
+						if ($zoom->host_id == $host_id) {
+							$user_is_host++;
+						}
+					}
+					if ($ct > $user_is_host) {
+						$msg .= get_string('msg_scheduled_user', 'block_zoom_scheduler');
+						$class = 'alert alert-warning';
+					}
 				}
 			} else {
 				// Check if current user is enrolled.
