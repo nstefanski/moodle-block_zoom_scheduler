@@ -38,6 +38,8 @@ $string['action'] = 'Action';
 $string['action_help'] = '1. Create a new meeting in each section of the course'
 	.'<br />2. Update all existing meetings in the course to standard settings';
 
+$string['completionexpected'] = 'Set completion expected';
+$string['completionexpected_desc'] = 'If enabled, completion expected will be set to 5 minutes after the Zoom meeting\'s scheduled time';
 $string['defaultweekday'] = 'Default weekday';
 $string['defaultweekday_desc'] = 'The default day of week for scheduling zoom meetings in the block form';
 $string['defaultduration'] = 'Default meeting length';
