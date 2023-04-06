@@ -176,6 +176,7 @@ function process_zoom_form($data) {
 		$newzoom->option_waiting_room = $config->defaultwaitingroomoption;
 		$newzoom->option_mute_upon_entry = $config->defaultmuteuponentryoption;
 		$newzoom->option_authenticated_users = $config->defaultauthusersoption;
+		$newzoom->option_auto_recording = $config->recordingoption;
 		$newzoom->requirepasscode = 1;
 		$newzoom->meetingcode = $pmi_password ?? rand(100000,999999);
 		
