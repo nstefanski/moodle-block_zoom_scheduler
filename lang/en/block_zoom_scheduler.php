@@ -49,3 +49,4 @@ $string['updateexamplecourses'] = 'Update Example Courses';
 $string['msg_count'] = 'There are <strong>{$a}</strong> meetings currently scheduled in this course.';
 $string['msg_not_enrolled'] = '<br><br>You are not enrolled in the course. New meetings will be scheduled for {$a}.';
 $string['msg_scheduled_user'] = '<br><br>Some of the meetings in this course were scheduled by a different user. When the meetings are updated, they will remain the host.';
+$string['msg_zoom_error'] = '<br><br>Your zoom id could not be fetched due to <strong>{$a}</strong>';
