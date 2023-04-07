@@ -26,7 +26,8 @@ $string['pluginname'] = 'Zoom Scheduler';
 $string['topic'] = '{$a->prefix}Week {$a->section} Live Session - {$a->dt}';
 $string['dtformat'] = 'l, g:i A T';
 $string['cmidnumber'] = 'liveses-wk{$a->section}z{$a->count}';
-$string['description'] = 'Create/update a Zoom meeting for each week.';
+$string['description'] = 'Create/update a Zoom meeting for each week.'
+	.' Meeting dates are automatically calculated from the course start date using the time and the day of the week you enter below.';
 $string['weekday'] = 'Weekday';
 $string['timestart'] = 'Meeting start time';
 $string['timestart_help'] = 'Only hour and minute are necessary';
