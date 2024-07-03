@@ -42,7 +42,7 @@ function process_zoom_form($data) {
 	$config = get_config('zoom'); //TK
 	
 	$host_id = $data->host ?? null;
-	$service = new mod_zoom_webservice();
+	$service = zoom_webservice();
 	if (!$host_id) {
 		$moodleusers = get_enrolled_users($context, 'mod/zoom:addinstance', 0, 'u.*');
 		if ($moodleusers && !array_key_exists($USER->id, $moodleusers) ) {
