@@ -115,12 +115,14 @@ function process_zoom_form($data) {
 			['section' => sprintf("%02d", $section), 'count' => '01']);
 		$start_time = $dt->getTimestamp();
 		
-		$comp_dt = null;
+		/*$comp_dt = null;
 		if(get_config('block_zoom_scheduler', 'completionexpected')) {
 			$comp_dt = $dt;
 			$comp_dt->add(new DateInterval('PT'.(300).'S') );
 			$comp_time = $comp_dt->getTimestamp();
-		}
+		}*/
+		//set completion expected to same as meeting start to avoid duplicate events on dashboard
+		$comp_time = $start_time;
 		
 		$newzoom = null;
 		
