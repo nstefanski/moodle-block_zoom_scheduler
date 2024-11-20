@@ -26,7 +26,8 @@ $string['pluginname'] = 'Zoom Scheduler';
 $string['topic'] = '{$a->prefix}Week {$a->section} Live Session - {$a->dt}';
 $string['dtformat'] = 'l, g:i A T';
 $string['cmidnumber'] = 'liveses-wk{$a->section}z{$a->count}';
-$string['description'] = 'Create/update a Zoom meeting for each week.';
+$string['description'] = 'Create/update a Zoom meeting for each week.'
+	.' Meeting dates are automatically calculated from the course start date using the time and the day of the week you enter below.';
 $string['weekday'] = 'Weekday';
 $string['timestart'] = 'Meeting start time';
 $string['timestart_help'] = 'Only hour and minute are necessary';
@@ -38,7 +39,17 @@ $string['action'] = 'Action';
 $string['action_help'] = '1. Create a new meeting in each section of the course'
 	.'<br />2. Update all existing meetings in the course to standard settings';
 
+$string['completionexpected'] = 'Set completion expected';
+$string['completionexpected_desc'] = 'If enabled, completion expected will be set to 5 minutes after the Zoom meeting\'s scheduled time';
 $string['defaultweekday'] = 'Default weekday';
 $string['defaultweekday_desc'] = 'The default day of week for scheduling zoom meetings in the block form';
 $string['defaultduration'] = 'Default meeting length';
 $string['defaultduration_desc'] = 'The default duration for scheduling zoom meetings in the block form';
+$string['examplecourses'] = 'Example courses';
+$string['examplecourses_desc'] = 'Comma separated list of course ids to be used for training purposes; the course start dates will be regularly updated and the zoom meetings purged';
+$string['updateexamplecourses'] = 'Update Example Courses';
+
+$string['msg_count'] = 'There are <strong>{$a}</strong> meetings currently scheduled in this course.';
+$string['msg_not_enrolled'] = '<br><br>You are not enrolled in the course. New meetings will be scheduled for {$a}.';
+$string['msg_scheduled_user'] = '<br><br>Some of the meetings in this course were scheduled by a different user. When the meetings are updated, they will remain the host.';
+$string['msg_zoom_error'] = '<br><br>Your zoom id could not be fetched due to <strong>{$a}</strong>';

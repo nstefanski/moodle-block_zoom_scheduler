@@ -72,7 +72,7 @@ class block_zoom_scheduler extends block_base {
    * @return The HTML content of the block.
    */
 	function get_content() {
-		global $COURSE, $CFG /*, $PAGE, $USER, $PAGE, $OUTPUT, $DB*/;
+		global $COURSE, $CFG, $DB, $USER;
 		
 		require_once('zoom_scheduler_form.php');
 		require_once($CFG->dirroot.'/blocks/zoom_scheduler/lib.php');
@@ -97,6 +97,47 @@ class block_zoom_scheduler extends block_base {
 			$courseurl = new moodle_url('/course/view.php', array('id' => $COURSE->id));
 			redirect($courseurl);//, $result, null, \core\output\notification::NOTIFY_WARNING);
 		} else {
+			$msg = '';
+			$zooms = $DB->get_records('zoom', array('course' => $COURSE->id), '', 'id,host_id');
+			$ct = count($zooms);
+			$msg = get_string('msg_count', 'block_zoom_scheduler', $ct);
+			$class = 'alert alert-info';
+			if ($zooms) {
+				// Check if current user is host.
+				try {
+					$host_id = zoom_get_user_id();
+				} catch(\moodle_exception $exception) {
+					//$msg .= '<p><strong>' . $exception->getMessage() . '</strong></p>';
+					$msg .= get_string('msg_zoom_error', 'block_zoom_scheduler', $exception->getMessage());
+					$class = 'alert alert-warning';
+				}
+				if ($host_id) {
+					$user_is_host = 0;
+					foreach ($zooms as $zoom) {
+						if ($zoom->host_id == $host_id) {
+							$user_is_host++;
+						}
+					}
+					if ($ct > $user_is_host) {
+						$msg .= get_string('msg_scheduled_user', 'block_zoom_scheduler');
+						$class = 'alert alert-warning';
+					}
+				}
+			} else {
+				// Check if current user is enrolled.
+				$moodleusers = get_enrolled_users($context, 'mod/zoom:addinstance', 0, 'u.*');
+				if ($moodleusers && !array_key_exists($USER->id, $moodleusers) ) {
+					// The form will try to use the fist enrolled user with the proper capability.
+					$firstuser = reset($moodleusers);
+					$msg .= get_string('msg_not_enrolled', 'block_zoom_scheduler', "$firstuser->firstname $firstuser->lastname");
+					$class = 'alert alert-warning';
+				} else {
+					// The form will attempt to create meetings as the current user. No additional notification is needed.
+					//$msg = '';
+				}
+			}
+			$this->content->text = $msg ? html_writer::div($msg, $class) : '';
+			
 			//Set default data (if any)
 			$mform->set_data(
 				array(
@@ -108,7 +149,7 @@ class block_zoom_scheduler extends block_base {
 			);
 			
 			//displays the form
-			$this->content->text = $mform->render();
+			$this->content->text .= $mform->render();
 		}
 		return $this->content;
 	}

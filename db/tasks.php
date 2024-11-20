@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of the Zoom plugin for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,18 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Definition of Zoom Scheduler scheduled tasks.
  *
  * @package    block_zoom_scheduler
+ * @author     Nick Stefanski
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-      
-$plugin->component = 'block_zoom_scheduler';
-$plugin->version   = 2022080200;
-$plugin->release = 'v0.9';
-$plugin->requires = 2017051500.00;
-$plugin->maturity = MATURITY_BETA;
-$plugin->dependencies = array('mod_zoom' => 2018092200);
-//$plugin->cron = 0;
+defined('MOODLE_INTERNAL') || die;
+
+$tasks = array(
+    array(
+        'classname' => 'block_zoom_scheduler\task\update_example_courses',
+        'blocking' => 0,
+        'minute' => '1',
+        'hour' => '0',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+    ),
+);
