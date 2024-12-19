@@ -95,7 +95,7 @@ class block_zoom_scheduler extends block_base {
 			//$result = 
 			process_zoom_form($data);
 			$courseurl = new moodle_url('/course/view.php', array('id' => $COURSE->id));
-			redirect($courseurl);//, $result, null, \core\output\notification::NOTIFY_WARNING);
+			//redirect($courseurl);//, $result, null, \core\output\notification::NOTIFY_WARNING);
 		} else {
 			$msg = '';
 			$zooms = $DB->get_records('zoom', array('course' => $COURSE->id), '', 'id,host_id');

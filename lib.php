@@ -172,7 +172,7 @@ function process_zoom_form($data) {
 		$newzoom->start_time = $start_time;
 		$newzoom->duration = $data->duration;
 		$newzoom->cmidnumber = $cmidnumber;
-		if($comp_dt) {
+		if($comp_time) {
 			$newzoom->completionexpected = $comp_time;
 		}
 		
