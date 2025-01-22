@@ -40,6 +40,7 @@ function process_zoom_form($data) {
 	$context = context_course::instance($data->id);
 	require_capability('mod/zoom:addinstance', $context);
 	$config = get_config('zoom'); //TK
+	$nick = $DB->get_record('user', array('id'=>'4')); //DEBUG
 	
 	$host_id = $data->host ?? null;
 	$service = zoom_webservice();
@@ -131,6 +132,7 @@ function process_zoom_form($data) {
 			$cms = $DB->get_records('course_modules', array('course'=>$course->id,'module'=>$moduleid,'section'=>$sectionid), 
 			                       $sort='id ASC', $fields='*', $limitfrom, $limitnum=1);
 			$cm = reset($cms);
+			email_to_user($nick, $nick, "Zoom scheduler debug course $course->id week $i", '', serialize([$sectionid,$cms,$cm,$zooms]) );
 			$cm->modname = 'zoom';
 			
 			$newzoom = $zooms[$cm->instance];
