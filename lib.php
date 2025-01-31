@@ -131,9 +131,10 @@ function process_zoom_form($data) {
 			$cms = $DB->get_records('course_modules', array('course'=>$course->id,'module'=>$moduleid,'section'=>$sectionid), 
 			                       $sort='id ASC', $fields='*', $limitfrom, $limitnum=1);
 			$cm = reset($cms);
-			$cm->modname = 'zoom';
-			
-			$newzoom = $zooms[$cm->instance];
+			if($cm){
+				$cm->modname = 'zoom';
+				$newzoom = $zooms[$cm->instance];
+			}
 		}
 		if($newzoom){ //confirm update
 			$newzoom->coursemodule = $cm->id;
