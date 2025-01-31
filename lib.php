@@ -143,8 +143,8 @@ function process_zoom_form($data) {
 			
 			$newzoom->visible = $cm->visible;
 			$newzoom->availability = $cm->availability;
-			$newzoom->completion = $cm->completion;
-			$newzoom->completionview = $cm->completionview;
+			$newzoom->completion = 2; // TK always set
+			$newzoom->completionview = 1; // TK always set
 			$newzoom->introeditor = array('text' => $newzoom->intro, 'format' => $newzoom->introformat, 'itemid' => 0);
 		} else { //add
 			$newzoom = new stdClass();
